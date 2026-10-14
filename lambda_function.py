@@ -6,20 +6,25 @@ def lambda_handler(event, context):
 
     result = {
         "statusCode": 200,
-        "body": json.dumps({
+        "body": {
             "message": f"Salem, {name}!",
-            "service": "AWS Lambda practice",
+            "service": "AWS Lambda",
             "status": "Success"
-        })
+        }
     }
 
     return result
 
 
-# GitHub Actions арқылы тексеру
 if __name__ == "__main__":
     event = {"name": "Student"}
+
     response = lambda_handler(event, None)
 
-    print("Lambda function result:")
-    print(json.dumps(response, indent=4))
+    print("=== AWS Lambda жауабы ===")
+    print("Status Code:", response["statusCode"])
+    print("Message:", response["body"]["message"])
+    print("Service:", response["body"]["service"])
+    print("Status:", response["body"]["status"])
+
+
