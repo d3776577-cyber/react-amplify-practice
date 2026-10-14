@@ -1,4 +1,4 @@
-ef lambda_handler(event, context):
+def lambda_handler(event, context):
     name = event.get("name", "Student")
 
     return {
