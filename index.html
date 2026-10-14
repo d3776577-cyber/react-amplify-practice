@@ -2,58 +2,726 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS Lambda Practice</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #f0f4f8;
-            padding: 60px 20px;
-        }
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 450px;
-            margin: auto;
-            box-shadow: 0 4px 12px #ccc;
-        }
-        button {
-            padding: 12px 24px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        pre {
-            text-align: left;
-            background: #eee;
-            padding: 15px;
-            white-space: pre-wrap;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LambdaLab | Cloud Computing</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #090d1b;
+    --panel: #11182b;
+    --border: #26314b;
+    --purple: #8b5cf6;
+    --blue: #6366f1;
+    --text: #f8fafc;
+    --muted: #9ca9c3;
+    --green: #4ade80;
+}
+
+body {
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    background:
+        radial-gradient(ellipse at 15% 5%, #24194d 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 30%, #12264c 0%, transparent 38%),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    width: min(1120px, 92%);
+    margin: auto;
+}
+
+header {
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    background: rgba(9,13,27,.75);
+    backdrop-filter: blur(15px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+nav {
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #8b5cf6, #4f46e5);
+    border-radius: 13px;
+    font-size: 24px;
+    box-shadow: 0 0 30px #8b5cf644;
+}
+
+.logo span span {
+    color: #a78bfa;
+}
+
+.nav-links {
+    display: flex;
+    gap: 27px;
+}
+
+.nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: .2s;
+}
+
+.nav-links a:hover {
+    color: white;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid #24513b;
+    border-radius: 30px;
+    background: #10251e;
+    color: #86efac;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+}
+
+.hero {
+    padding: 85px 0 70px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 55px;
+}
+
+.eyebrow {
+    color: #c4b5fd;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+}
+
+h1 {
+    font-size: clamp(38px, 5vw, 62px);
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, #a78bfa, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 490px;
+    margin-bottom: 30px;
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 13px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform .2s, box-shadow .2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    color: white;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    box-shadow: 0 8px 25px #6366f133;
+}
+
+.btn-secondary {
+    color: white;
+    background: #ffffff08;
+    border-color: var(--border);
+}
+
+.terminal {
+    background: #0d1322;
+    border: 1px solid #303a55;
+    border-radius: 17px;
+    overflow: hidden;
+    box-shadow: 0 25px 80px #0005;
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+}
+
+.terminal-head {
+    padding: 15px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff05;
+    border-bottom: 1px solid #253047;
+}
+
+.window-dots {
+    display: flex;
+    gap: 7px;
+}
+
+.window-dots i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fb7185;
+}
+
+.window-dots i:nth-child(2) { background: #fbbf24; }
+.window-dots i:nth-child(3) { background: #4ade80; }
+
+.terminal-title {
+    color: #9ca9c3;
+    font-size: 12px;
+}
+
+.code {
+    padding: 26px 22px;
+    overflow-x: auto;
+    font: 13px/2 "Consolas", monospace;
+    color: #dbeafe;
+}
+
+.purple { color: #c4b5fd; }
+.blue { color: #7dd3fc; }
+.green { color: #86efac; }
+.orange { color: #fcd34d; }
+.muted { color: #64748b; }
+
+.section {
+    padding: 45px 0 65px;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.section-heading h2 {
+    font-size: 31px;
+    margin-bottom: 10px;
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.card {
+    background: linear-gradient(145deg, #151d32, #0f1526);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 25px;
+    transition: .25s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #7160c9;
+}
+
+.card-icon {
+    width: 47px;
+    height: 47px;
+    border-radius: 13px;
+    background: #8b5cf620;
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+    margin-bottom: 19px;
+}
+
+.card h3 {
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.demo-layout {
+    display: grid;
+    grid-template-columns: .8fr 1.2fr;
+    gap: 22px;
+}
+
+.panel {
+    background: #11182b;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.panel-head {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+}
+
+.panel-body {
+    padding: 22px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    color: #cbd5e1;
+    margin-bottom: 8px;
+}
+
+input {
+    width: 100%;
+    padding: 13px 14px;
+    background: #090f1d;
+    color: white;
+    border: 1px solid #34415d;
+    border-radius: 9px;
+    outline: none;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+input:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px #8b5cf622;
+}
+
+.full {
+    width: 100%;
+}
+
+.result-console {
+    min-height: 205px;
+    padding: 22px;
+    background: #080d18;
+    font: 13px/2 "Consolas", monospace;
+    color: #a8b5ce;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.success { color: #4ade80; }
+.error { color: #fb7185; }
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.metric {
+    background: #ffffff05;
+    border: 1px solid var(--border);
+    padding: 17px;
+    border-radius: 12px;
+}
+
+.metric strong {
+    display: block;
+    font-size: 23px;
+    color: #c4b5fd;
+}
+
+.metric span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.workflow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 13px;
+    flex-wrap: wrap;
+}
+
+.workflow-step {
+    background: #141c31;
+    border: 1px solid #303b58;
+    border-radius: 12px;
+    padding: 17px 20px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.workflow-step b {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.arrow {
+    color: #a78bfa;
+    font-size: 23px;
+}
+
+.note {
+    margin-top: 22px;
+    padding: 17px 20px;
+    background: #201c38;
+    border: 1px solid #51417d;
+    border-radius: 11px;
+    color: #d8d0fa;
+    font-size: 13px;
+}
+
+footer {
+    border-top: 1px solid #26314b;
+    padding: 25px 0;
+    color: #8995ad;
+    font-size: 12px;
+    text-align: center;
+}
+
+@media (max-width: 800px) {
+    .hero {
+        grid-template-columns: 1fr;
+        padding-top: 55px;
+        gap: 35px;
+    }
+    .cards {
+        grid-template-columns: 1fr;
+    }
+    .demo-layout {
+        grid-template-columns: 1fr;
+    }
+    .nav-links {
+        display: none;
+    }
+    .metrics {
+        grid-template-columns: 1fr;
+    }
+    h1 {
+        letter-spacing: -1px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+</style>
 </head>
+
 <body>
-    <div class="card">
-        <h1>AWS Lambda Practice</h1>
-        <p>Python бағдарламасының нәтижесі</p>
-        <button onclick="showResult()">Кодты іске қосу</button>
-        <pre id="result">Нәтижені көру үшін батырманы басыңыз.</pre>
+
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <div class="logo-icon">λ</div>
+                <span>Lambda<span>Lab</span></span>
+            </div>
+
+            <div class="nav-links">
+                <a href="#overview">Басты бет</a>
+                <a href="#features">Мүмкіндіктер</a>
+                <a href="#demo">Demo</a>
+                <a href="#workflow">Жұмыс барысы</a>
+            </div>
+
+            <div class="status">
+                <span class="dot"></span>
+                GitHub Actions
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+<section class="container hero" id="overview">
+    <div>
+        <div class="eyebrow">☁ CLOUD COMPUTING PROJECT</div>
+        <h1>Python кодын<br><span class="gradient-text">бұлтта іске қос</span></h1>
+
+        <p>
+            Бұлттық есептеулердің жұмыс принципін зерттеуге арналған
+            интерактивті оқу жобасы. Код, нәтиже және автоматтандыру
+            бір жерде.
+        </p>
+
+        <div class="buttons">
+            <a href="#demo" class="btn btn-primary">▶ Demo іске қосу</a>
+            <a href="https://github.com/d3776577-cyber/react-amplify-practice/actions/workflows/run-code.yml"
+               target="_blank" rel="noopener noreferrer"
+               class="btn btn-secondary">↗ GitHub Actions</a>
+        </div>
     </div>
 
-    <script>
-        function showResult() {
-            document.getElementById("result").textContent =
+    <div class="terminal">
+        <div class="terminal-head">
+            <div class="window-dots"><i></i><i></i><i></i></div>
+            <span class="terminal-title">lambda_function.py</span>
+            <span class="green">● Python</span>
+        </div>
+
+        <div class="code"><span class="purple">def</span> <span class="blue">lambda_handler</span>(event, context):
+    name = event.get(<span class="green">"name"</span>, <span class="green">"Student"</span>)
+
+    <span class="purple">return</span> {
+        <span class="green">"statusCode"</span>: <span class="orange">200</span>,
+        <span class="green">"body"</span>: {
+            <span class="green">"message"</span>: <span class="green">f"Salem, {name}!"</span>,
+            <span class="green">"status"</span>: <span class="green">"Success"</span>
+        }
+    }
+
+<span class="muted"># Serverless execution demo</span></div>
+    </div>
+</section>
+
+<section class="container section" id="features">
+    <div class="section-heading">
+        <h2>Жоба мүмкіндіктері</h2>
+        <p>Бұлттық бағдарламалау негіздерін қарапайым түрде үйрен.</p>
+    </div>
+
+    <div class="cards">
+        <article class="card">
+            <div class="card-icon">☁️</div>
+            <h3>Cloud Computing</h3>
+            <p>Бұлттық ортада бағдарламаларды орындау идеясымен танысу.</p>
+        </article>
+
+        <article class="card">
+            <div class="card-icon">⚡</div>
+            <h3>Автоматтандыру</h3>
+            <p>GitHub Actions арқылы кодты автоматты түрде іске қосу.</p>
+        </article>
+
+        <article class="card">
+            <div class="card-icon">⌘</div>
+            <h3>Нәтиже консолі</h3>
+            <p>Функция жауабын, мәртебелік кодты және орындалу күйін көру.</p>
+        </article>
+    </div>
+</section>
+
+<section class="container section" id="demo">
+    <div class="section-heading">
+        <h2>Интерактивті Demo</h2>
+        <p>Атыңды енгізіп, мысал функцияның жауабын көр.</p>
+    </div>
+
+    <div class="demo-layout">
+        <div class="panel">
+            <div class="panel-head">
+                <span>⚙ Параметрлер</span>
+                <span class="muted">INPUT</span>
+            </div>
+
+            <div class="panel-body">
+                <label for="studentName">Пайдаланушының аты</label>
+                <input id="studentName" type="text"
+                       value="Student" maxlength="60"
+                       placeholder="Атыңды енгіз">
+
+                <button class="btn btn-primary full" id="runButton"
+                        onclick="runDemo()">
+                    ▶ Кодты іске қосу
+                </button>
+
+                <p style="margin-top:17px;color:#9ca9c3;font-size:12px">
+                    Демонстрация браузер ішінде орындалады.
+                </p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <span>▣ Нәтиже консолі</span>
+                <span id="runStatus" class="muted">READY</span>
+            </div>
+
+            <div class="result-console" id="consoleOutput">LambdaLab Console
+------------------------------
+Дайын. Кодты іске қосу батырмасын бас.</div>
+        </div>
+    </div>
+
+    <div class="metrics">
+        <div class="metric">
+            <strong id="metricCode">—</strong>
+            <span>Status Code</span>
+        </div>
+        <div class="metric">
+            <strong id="metricStatus">READY</strong>
+            <span>Execution Status</span>
+        </div>
+        <div class="metric">
+            <strong id="metricTime">—</strong>
+            <span>Execution Time</span>
+        </div>
+    </div>
+</section>
+
+<section class="container section" id="workflow">
+    <div class="section-heading">
+        <h2>Жұмыс қалай орындалады?</h2>
+        <p>Жобаның негізгі кезеңдері</p>
+    </div>
+
+    <div class="workflow">
+        <div class="workflow-step">
+            <b>① Python</b>
+            Код жазу
+        </div>
+        <span class="arrow">→</span>
+        <div class="workflow-step">
+            <b>② GitHub</b>
+            Кодты сақтау
+        </div>
+        <span class="arrow">→</span>
+        <div class="workflow-step">
+            <b>③ Actions</b>
+            Кодты орындау
+        </div>
+        <span class="arrow">→</span>
+        <div class="workflow-step">
+            <b>④ Console</b>
+            Нәтижені тексеру
+        </div>
+    </div>
+
+    <div class="note">
+        <b>Маңызды:</b> бұл сайттағы Demo Python кодын браузердегі
+        JavaScript арқылы имитациялайды. Нақты Python функциясы GitHub
+        Actions ортасында орындалады. AWS Lambda-ның өзі бұл жобада
+        қосылмаған.
+    </div>
+
+    <div style="text-align:center;margin-top:28px">
+        <a class="btn btn-secondary"
+           href="https://github.com/d3776577-cyber/react-amplify-practice/actions/workflows/run-code.yml"
+           target="_blank" rel="noopener noreferrer">
+            ↗ Нақты орындау логтарын ашу
+        </a>
+    </div>
+</section>
+</main>
+
+<footer>
+    <div class="container">
+        LambdaLab © 2026 · Cloud Computing Practical Project · GitHub Actions
+    </div>
+</footer>
+
+<script>
+function runDemo() {
+    const nameInput = document.getElementById("studentName");
+    const output = document.getElementById("consoleOutput");
+    const status = document.getElementById("runStatus");
+    const button = document.getElementById("runButton");
+
+    const name = nameInput.value.trim() || "Student";
+    const start = performance.now();
+
+    button.disabled = true;
+    button.textContent = "⏳ Орындалып жатыр...";
+    status.textContent = "RUNNING";
+    status.className = "orange";
+
+    output.textContent = "LambdaLab Console\n------------------------------\nКод орындалып жатыр...";
+
+    setTimeout(() => {
+        const elapsed = (performance.now() - start).toFixed(2);
+
+        output.textContent =
 `=== AWS Lambda жауабы ===
 Status Code: 200
-Message: Salem, Student!
-Service: AWS Lambda
-Status: Success`;
-        }
-    </script>
+Message: Salem, ${name}!
+Service: AWS Lambda (demo)
+Status: Success
+
+Execution completed.
+`;
+
+        status.textContent = "SUCCESS";
+        status.className = "success";
+
+        document.getElementById("metricCode").textContent = "200";
+        document.getElementById("metricStatus").textContent = "SUCCESS";
+        document.getElementById("metricTime").textContent = elapsed + " ms";
+
+        button.disabled = false;
+        button.textContent = "↻ Қайта іске қосу";
+    }, 500);
+}
+</script>
+
 </body>
 </html>
-
