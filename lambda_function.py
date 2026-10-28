@@ -1,30 +1,42 @@
-
 import json
+import os
+import boto3
+from botocore.config import Config
+
+BUCKET = os.environ["S3_BUCKET"]
+s3 = boto3.client("s3", config=Config(signature_version="s3v4"))
+
 
 def lambda_handler(event, context):
-    name = event.get("name", "Student")
+    body = json.loads(event.get("body") or "{}")
+    action = body.get("action")      # "upload" или "download"
+    key = body.get("key")            # имя файла в бакете
 
-    result = {
-        "statusCode": 200,
-        "body": {
-            "message": f"Salem, {name}!",
-            "service": "AWS Lambda",
-            "status": "Success"
-        }
+    if not action or not key:
+        return _resp(400, {"error": "нужны action и key"})
+
+    if action == "upload":
+        url = s3.generate_presigned_url(
+            "put_object",
+            Params={"Bucket": BUCKET, "Key": key, "ServerSideEncryption": "AES256"},
+            ExpiresIn=900,
+        )
+    elif action == "download":
+        url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": BUCKET, "Key": key},
+            ExpiresIn=900,
+        )
+    else:
+        return _resp(400, {"error": "action: upload или download"})
+
+    return _resp(200, {"url": url, "expires_in": 900})
+
+
+def _resp(code, data):
+    return {
+        "statusCode": code,
+        "headers": {"Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"},
+        "body": json.dumps(data),
     }
-
-    return result
-
-
-if __name__ == "__main__":
-    event = {"name": "Student"}
-
-    response = lambda_handler(event, None)
-
-    print("=== AWS Lambda жауабы ===")
-    print("Status Code:", response["statusCode"])
-    print("Message:", response["body"]["message"])
-    print("Service:", response["body"]["service"])
-    print("Status:", response["body"]["status"])
-
-
